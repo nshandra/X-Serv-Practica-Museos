@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+
+<Contenidos>
+    <infoDataset>
+        <nombre>Museos de la ciudad de Madrid</nombre>
+        <id>201132-0</id>
+        <uri>https://datos.madrid.es/egob/catalogo/201132-0-museos</uri>
+        <descripcion> Datos de los Museos de la ciudad de Madrid. Localización, transportes, horarios, visitas, datos de contacto. 
+     </descripcion>
+    </infoDataset>
+    <contenido>
+        <tipo>EntidadesYOrganismos</tipo>
+        <atributos idioma="es">
+            <atributo nombre="ID-ENTIDAD">4847190</atributo>
+            <atributo nombre="NOMBRE">Casa Museo Lope de Vega</atributo>
+            <atributo nombre="DESCRIPCION-ENTIDAD"><![CDATA['Mi casilla, mi quietud, mi g&uuml;ertecillo y estudio'. Así define su casa Félix Lope de Vega (1562-1635) en una carta dirigida a un amigo. Situada en pleno centro histórico, en el Barrio de las Letras, la Casa Museo Lope de Vega se ubica en el edificio donde el escritor vivió sus últimos 25 años. La recreación de ambientes, cuyo objetivo es que se respire la presencia de Lope, evoca la vida cotidiana del Siglo de Oro y nos acerca a su intimidad. El equipamiento de la casa incorpora obras de arte, mobiliario, enseres y ediciones bibliográficas vinculadas al literato y su tiempo.   Visitas Guiadas   El acceso al museo se hace mediante visitas guiadas en grupo (máximo 15 personas). Imprescindible reservar con antelación, llamando al teléfono 914 299 216 o escribiendo un correo electrónico a casamuseolopedevega@madrid.org.  Las visitas comienzan cada media hora y tienen una duración aproximada de 35 minutos (última visita a las 17 horas).  También se realizan visitas en inglés, italiano y francés.]]></atributo>
+            <atributo nombre="HORARIO"><![CDATA[Para la visita es  imprescindible reserva anticipada  en:  casamuseolopedevega@madrid.org  o en el teléfono: 914 299 216, en horario del museo.  De martes a domingo de 10 a 18 horas (último pase a las 17 horas)  Cerrado los lunes, días 1 y 6 de enero, 1 de mayo, 9 de noviembre y 24, 25 y 31 de diciembre.]]></atributo>
+            <atributo nombre="TRANSPORTE"><![CDATA[Metro: Antón Martín (línea 1).  Bus: 6, 9, 10, 14, 26, 27, 32, 34, 37, 45, 57.]]></atributo>
+            <atributo nombre="ACCESIBILIDAD">0</atributo>
+            <atributo nombre="CONTENT-URL">http://www.madrid.es/sites/v/index.jsp?vgnextchannel=9e4c43db40317010VgnVCM100000dc0ca8c0RCRD&amp;vgnextoid=4eff8c46145e8110VgnVCM2000000c205a0aRCRD</atributo>
+            <atributo nombre="LOCALIZACION">
+                <atributo nombre="NOMBRE-VIA">CERVANTES</atributo>
+                <atributo nombre="CLASE-VIAL">CALLE</atributo>
+                <atributo nombre="TIPO-NUM">V</atributo>
+                <atributo nombre="NUM">11</atributo>
+                <atributo nombre="LOCALIDAD">MADRID</atributo>
+                <atributo nombre="PROVINCIA">MADRID</atributo>
+                <atributo nombre="CODIGO-POSTAL">28014</atributo>
+                <atributo nombre="BARRIO">CORTES</atributo>
+                <atributo nombre="DISTRITO">CENTRO</atributo>
+                <atributo nombre="COORDENADA-X">440935</atributo>
+                <atributo nombre="COORDENADA-Y">4474190</atributo>
+                <atributo nombre="LATITUD">40.414358466555235</atributo>
+                <atributo nombre="LONGITUD">-3.6974741545860015</atributo>
+            </atributo>
+            <atributo nombre="DATOSCONTACTOS">
+                <atributo nombre="TELEFONO">914 299 216</atributo>
+                <atributo nombre="FAX">914 292 601</atributo>
+                <atributo nombre="EMAIL">casamuseolopedevega@madrid.org</atributo>
+            </atributo>
+            <atributo nombre="TIPO">/contenido/entidadesYorganismos/Museos</atributo>
+        </atributos>
+    </contenido>
+    <contenido>
+        <tipo>EntidadesYOrganismos</tipo>
+        <atributos idioma="es">
+            <atributo nombre="ID-ENTIDAD">4949641</atributo>
+            <atributo nombre="NOMBRE">Casita - Museo del Ratón Pérez</atributo>
+            <atributo nombre="DESCRIPCION-ENTIDAD"><![CDATA[La residencia de la familia Pérez está situada en los sótanos de la confitería Prasi, en el número ocho de la calle del Arenal, según cita Luis Coloma.]]></atributo>
+            <atributo nombre="HORARIO"><![CDATA[Lunes  de 17 a 20 horas.  De martes a viernes de 11 a 14 horas y de 17 a 20 horas.  Sábados de 11 a 15 horas y de 16 a 20 horas.  Domingos y festivos consultar.]]></atributo>
+            <atributo nombre="TRANSPORTE"><![CDATA[Metro: Sol (líneas: 1, 2 y 3), Ópera (línea 3, Ramal Ópera Príncipe Pío), Callao (línea 3, 5)  Bus: 3, 5, 15, 20, 52, 53, 150]]></atributo>
+            <atributo nombre="DESCRIPCION"><![CDATA[Venta de entradas directamente en el Museo.  Recomendado a partir de los 5 años.  Aforo limitado. El acceso es por turnos de visitas.]]></atributo>
+            <atributo nombre="ACCESIBILIDAD">0</atributo>
+            <atributo nombre="CONTENT-URL">http://www.madrid.es/sites/v/index.jsp?vgnextchannel=9e4c43db40317010VgnVCM100000dc0ca8c0RCRD&amp;vgnextoid=990950e86d4ca110VgnVCM2000000c205a0aRCRD</atributo>
+            <atributo nombre="LOCALIZACION">
+                <atributo nombre="NOMBRE-VIA">ARENAL</atributo>
+                <atributo nombre="CLASE-VIAL">CALLE</atributo>
+                <atributo nombre="TIPO-NUM">V</atributo>
+                <atributo nombre="NUM">8</atributo>
+                <atributo nombre="PLANTA">1.ª</atributo>
+                <atributo nombre="LOCALIDAD">MADRID</atributo>
+                <atributo nombre="PROVINCIA">MADRID</atributo>
+                <atributo nombre="CODIGO-POSTAL">28013</atributo>
+                <atributo nombre="BARRIO">SOL</atributo>
+                <atributo nombre="DISTRITO">CENTRO</atributo>
+                <atributo nombre="COORDENADA-X">440254</atributo>
+                <atributo nombre="COORDENADA-Y">4474494</atributo>
+                <atributo nombre="LATITUD">40.41704834412296</atributo>
+                <atributo nombre="LONGITUD">-3.7055288844865233</atributo>
+            </atributo>
+            <atributo nombre="DATOSCONTACTOS">
+                <atributo nombre="TELEFONO">915 226 968</atributo>
+                <atributo nombre="EMAIL">info@casamuseoratonperez.es</atributo>
+            </atributo>
+            <atributo nombre="TIPO">/contenido/entidadesYorganismos/Museos</atributo>
+        </atributos>
+    </contenido>
+</Contenidos>
