@@ -2,7 +2,7 @@
 
 - Nombre y titulación:
 	Nazar Shandra.
-	Grado en ingeniería en  tecnologías de la telecomunicación.
+	Grado en ingeniería en tecnologías de la telecomunicación.
 
 - Nombre de su cuenta en el laboratorio del alumno:
 	nshandra
@@ -17,7 +17,7 @@
 	- item 1
 
 - URL del vídeo demostración de la funcionalidad básica:
-	[VIDEO](https://github.com/nshandra)
+	[VIDEO]()
 	
 - URL del vídeo demostración de la funcionalidad optativa, si se ha realizado funcionalidad optativa:
-	[VIDEO](https://github.com/nshandra)
+	[VIDEO]()

@@ -1,6 +1,9 @@
 <!-- templates/registration/login.html -->
 <form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Login</button>
+	<fieldset>
+		<legend>Login:</legend>
+		{% csrf_token %}
+		{{ form.as_p }}
+		<button type="submit">Login</button>
+	</fieldset>
 </form>

@@ -4,23 +4,31 @@ from django.shortcuts import render, render_to_response
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import views as auth_vs
 
-import defusedxml.ElementTree as ET
-from museum_app.models import Museum
+from django.contrib import messages
+from django.contrib.auth.forms import UserCreationForm
+from museum_app.forms import Comment_Form
 
-def load_museums(request):
-    xmlFile = open('museo.xml', "r")
+# import defusedxml.ElementTree as ET
+import xml.etree.ElementTree as ET
+from museum_app.models import Museum, Collection
+from django.db.models import Count
+
+
+def load_museums():
+    xmlFile = open('201132-0-museos.xml', "r")
     tree = ET.parse(xmlFile)
     root = tree.getroot()
+    # DESCARTA infoDataset 
     root.remove(root.find('infoDataset'))
-    resp = ''
+    # resp = ''
+    # ITERA SOBRE EL XML
     for contenido in root:
-        # print('\n', contenido.tag, '\n')
         for atributos in contenido:
+            # ITERA SOBRE LOS ATRIBUTOS DEL MUSEO
             for atributo in atributos.findall('atributo'):
                 nombre = atributo.get('nombre')
-                # print(nombre)
                 if nombre == "ID-ENTIDAD":
-                    ID = atributo.text
+                    id = atributo.text
                 elif nombre == "NOMBRE":
                     name = atributo.text
                 elif nombre == "DESCRIPCION-ENTIDAD":
@@ -32,9 +40,9 @@ def load_museums(request):
                 elif nombre == "CONTENT-URL":
                     url = atributo.text
                 elif nombre == "LOCALIZACION":
+                    # ITERA SOBRE LOS ATRIBUTOS DE LOCALIZACION
                     for sub_atributo in atributo.findall('atributo'):
                         nombre = sub_atributo.get('nombre')
-                        # print(nombre)
                         if nombre == "CLASE-VIAL":
                             dirr0 = sub_atributo.text + ' '
                         elif nombre == "NOMBRE-VIA":
@@ -51,31 +59,122 @@ def load_museums(request):
                             distr = sub_atributo.text
                     dirr = dirr0 + dirr1 + pcode + dirr2
                 elif nombre == "DATOSCONTACTOS":
+                    # ITERA SOBRE LOS ATRIBUTOS DE DATOSCONTACTOS
                     for sub_atributo in atributo.findall('atributo'):
                         nombre = sub_atributo.get('nombre')
-                        # print(nombre)
                         if nombre == "TELEFONO":
                             tel = sub_atributo.text
                         elif nombre == "EMAIL":
                             email = sub_atributo.text
+        if acc == '1':
+            access = True
+        else:
+            access = False
 
-        Museum(id=ID, name=name, url=url, description=descr,
-               address=dirr, district=distr, tel=tel,
-               email=email).save()
-        resp += ID +'<br>'+name +'<br>'+descr +'<br>'+acc +'<br>'+url +'<br>'+distr +'<br>'+dirr +'<br>'+tel +'<br>'+email+'<br><br>'
-    return HttpResponse(resp)
+        Museum(id=id, name=name, url=url, description=descr,
+               access=access, address=dirr, district=distr,
+               tel=tel, email=email).save()
+        # resp += ID +'<br>'+name +'<br>'+descr +'<br>'+acc +'<br>'+url +'<br>'+distr +'<br>'+dirr +'<br>'+tel +'<br>'+email+'<br><br>'
+    # return HttpResponse('Job done')
 
-
-def login_view(request):
-    if request.user.is_authenticated():
-        return ("<p>Hi," + request.user.username +
-                " <a href=/logout>logout</a></p>")
+def museums_lists(filter_key):
+    if filter_key and filter_key != 'ALL':
+        print('FILTER')
+        m = Museum.objects.filter(district=filter_key)
     else:
-        return ("<p>Not logged in: <a href=/login>login</a></p>")
+        m = Museum.objects.all()
+    d = Museum.objects.values_list('district', flat=True).distinct()
+    return {'Museum_list': m, 'District_list': d}
+
+
+def museums(request):
+    filter_key = ''
+    if request.method == "GET":
+        if 'filter' in request.COOKIES:
+            filter_key = request.COOKIES['filter']
+        context = museums_lists(filter_key)
+        return render(request, 'museos.html', context)
+    elif request.method == "POST":
+        response = HttpResponseRedirect('museos')
+        if request.POST.get('district'):
+            response.set_cookie('filter', request.POST.get('district'))
+        elif request.POST.get('refresh'):
+            print('REFRESH')
+            load_museums()
+        return response
+    else:
+        return HttpResponseNotFound()
+
+
+def museum(request, ID):
+    print(ID)
+    if request.method == "GET":
+        m = Museum.objects.filter(id=ID)
+        f = Comment_Form()
+        context = {'Museum': m, 'Form': f}
+        return render(request, 'museo.html', context)
+    elif request.method == "POST":
+        if request.POST.get('text'):
+            m = Museum.objects.get(id=ID)
+            # m.coment.add(request.POST.get('coment'))
+            f = Comment_Form(request.POST)
+            # f.save(commit=False)
+            comm = f.save()
+            m.coment.add(comm)
+            m.save()
+
+            # Create a form instance with POST data.
+            # f = AuthorForm(request.POST)
+            # Create, but don't save the new author instance.
+            # new_comment = f.save(commit=False)
+            # # Save the new instance.
+            # new_comment.save()
+            # # Now, save the many-to-many data for the form.
+            # f.save_m2m()
+        return HttpResponseRedirect(request.path)
+    else:
+        return HttpResponseNotFound()
+
+
+def sign_up(request):
+    if request.method == "GET":
+        f = UserCreationForm()
+        return render(request, 'registration/signup.html', {'form': f})
+    elif request.method == "POST":
+        f = UserCreationForm(request.POST)
+        if f.is_valid():
+            f.save()
+            Collection(user=f.cleaned_data['username']).save()
+            messages.success(request, 'Account created successfully')
+            return HttpResponseRedirect('signup')
+        else:
+            messages.warning(request, 'Username already exist and/or passwords don\'t match up')
+            # print(f.cleaned_data['password1'])
+            # print(f.cleaned_data['password2'])
+            # if f.cleaned_data['password1'] !=  f.cleaned_data['password2']:
+            #     messages.warning(request, 'Check password')
+            # else:
+            #     messages.warning(request, 'Username alredy exist')
+            return HttpResponseRedirect('signup')
+    else:
+        return HttpResponseNotFound()
 
 
 def main_page(request):
-    return render(request, 'main.html')
+    if request.method == "GET":
+        # museos
+        m = Museum.objects.exclude(coment__isnull=True)\
+        .annotate(num_coment=Count('coment'))\
+        .order_by('num_coment')
+        # Museum_list = {'Museum_list': m}
+        # Usuarios
+        u = Collection.objects.all()
+        # User_list = {'User_list': u}
+        context = {'Museum_list': m, 'User_list': u}
+        print(m.count())
+        return render(request, 'main.html', context)
+    else:
+        return HttpResponseNotFound()
 
 
 # @csrf_exempt

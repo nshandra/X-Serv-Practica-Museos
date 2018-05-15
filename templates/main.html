@@ -1,7 +1,29 @@
-<!-- templates/ann_main.html -->
-{% extends 'base.html' %}
+<!-- templates/main.html -->
+{% extends 'bstrp.html' %}
 
 {% block title %}Templates Home{% endblock %}
 {% block content %}
-HOLA
+<main role="main" id="main" class="main_css container">
+	<!-- <div class="starter-template">
+		<h1>Bootstrap starter template</h1>
+		<p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
+	</div> -->
+	<div class="row">
+		<div class="col-md-8">
+			{% for museum in Museum_list %}
+				<ul>
+					<a href="{{ museum.url }}">{{ museum.name }}</a><br>
+					{{ museum.address }}<br>
+					<a href="/museos/{{ museum.id }}">Más información</a><br>
+				</ul>
+			{% endfor %}
+		</div>
+		<aside class="col-md-4">
+			{% for collection in User_list %}
+				<a href="/{{ collection.user }}">{{ collection.title }}</a>
+				by {{ collection.user }}<br>
+			{% endfor %}
+		</aside>
+	</div>
+</main>
 {% endblock %}

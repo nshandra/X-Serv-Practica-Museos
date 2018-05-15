@@ -1,0 +1,45 @@
+ templates/museo.html -->
+{% extends 'bstrp.html' %}
+{% block title %}{{ Museum.0.name }}{% endblock %}
+{% block content %}
+<main role="main" id="main" class="main_css container">
+	<div class="row"><h1>{{ Museum.0.name }}</h1></div>
+	<div class="row">
+		<p><a href="{{ Museum.0.url }}">LINK</a></p>
+		<p>{{ Museum.0.description }}<br></p>
+		<p>{{ Museum.0.address }}<br>
+			{{ Museum.0.tel }}<br>
+			{{ Museum.0.email }}<br></p>
+	</div>
+	<div class="row">
+		<p>
+			<form method="post">
+				<fieldset>
+					<legend>Comment:</legend>
+					{% csrf_token %}
+					<!-- <textarea name="coment" rows="5" cols="40">Comment here</textarea>  -->
+					{{ Form }}
+					<input type="submit" value="Coment">
+				</fieldset>
+			</form>
+		</p>
+	</div>
+	<div class="row">
+		{% for coment in Museum.0.coment.all %}
+			<p>{{ coment.text }}</p>
+		{% endfor %}
+	</div>
+</main>
+{% endblock %}
+
+<!-- 
+id = m.PositiveIntegerField(primary_key=True)
+name = m.CharField(max_length=240)
+url = m.URLField(max_length=2048)
+description = m.TextField()
+access = m.BooleanField(default=False)
+address = m.CharField(max_length=440)
+district = m.CharField(max_length=40)
+tel = m.CharField(max_length=240)
+email = m.EmailField()
+coment = m.ManyToManyField('Comment')

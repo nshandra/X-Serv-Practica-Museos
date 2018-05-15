@@ -1,0 +1,33 @@
+<!-- templates/museos.html -->
+{% extends 'bstrp.html' %}
+{% block title %}Museos{% endblock %}
+{% block content %}
+<main role="main" id="main" class="main_css container">
+	<form class="form-inline" method="post">
+		{% csrf_token %}
+		<fieldset>
+			<legend>Filter by districts:</legend>
+			<select name="district">
+				<option value="ALL">TODOS</option>
+				{% for district in District_list %}
+					<option value="{{ district }}">{{ district }}</option>
+				{% endfor %}
+		  </select>
+			<input type="submit" value="Filter"/>
+		</fieldset>
+	</form>
+	<form class="form-inline" method="post">
+		{% csrf_token %}
+		<input type="hidden" name="refresh" value="True">
+		<input type="hidden" name="next" value="{{ request.get_full_path }}">
+		<input type="submit" value="Refresh Museum DB">
+	</form>
+	<div class="row">
+		<div class="col-md-8">
+			{% for museum in Museum_list %}
+				<a href="/museos/{{ museum.id }}">{{ museum.name }}</a><br>
+			{% endfor %}
+		</div>
+	</div>
+</main>
+{% endblock %}

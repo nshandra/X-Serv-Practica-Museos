@@ -1,0 +1,16 @@
+<!-- templates/registration/signup.html -->
+{% if messages %}
+	<ul>
+		{% for message in messages %}
+		<li>{{ message }}</li>
+		{% endfor %}
+	</ul>
+{% endif %}
+<form method="post">
+	<fieldset>
+		<legend>Sign Up:</legend>
+		{% csrf_token %}
+		{{ form.as_p }}
+		<button type="submit">Sign Up</button>
+	</fieldset>
+</form>

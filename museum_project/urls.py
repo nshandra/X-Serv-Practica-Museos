@@ -7,8 +7,11 @@ from django.conf import settings
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^signup/?$', vs.sign_up),
     url(r'^login/?$', login),
     url(r'^logout/?$', logout, {'next_page': settings.LOGOUT_REDIRECT_URL}),
     url(r'^museo/?$', vs.load_museums),
+    url(r'^museos/?$', vs.museums),
+    url(r'^museos/(\d+)$', vs.museum),
     url(r'^$', vs.main_page)
 ]

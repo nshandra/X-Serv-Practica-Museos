@@ -12,11 +12,11 @@
 		<img src="{% static "banner.png" %}" alt="BANNER">
 		<!-- LOGIN BAR -->
 		{% if user.is_authenticated %}
-			<p>Hi, {{ user.username }} <a href=/logout>logout</a></p>
-			<!-- <form method="post" action="/" class="inline">
-				<input type="hidden" name="logout" value="True">
+			<p>Hi, {{ user.username }} <!-- <a href=/logout>logout</a></p> -->
+			<form method="get" action="/logout" class="inline">
+				<input type="hidden" name="next" value="{{ request.get_full_path }}">
 				<input type="submit" value="Logout">
-			</form> -->
+			</form></main></p>
 		{% else %}
 			<p>Not logged in: 
 			<form method="post" action="login">
@@ -29,6 +29,12 @@
 				<input type="hidden" name="next" value="{{ request.get_full_path }}" />
 			</form>
 			</p>
+		{% endif %}
+		<!-- OPTION BAR -->
+		{% if "{{ request.get_full_path }}" == "/" %}
+			BARRA
+		{% else %}
+			"{{ request.get_full_path }}"
 		{% endif %}
 		{% block content %}
 		{% endblock %}
