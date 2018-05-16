@@ -1,7 +1,7 @@
 from django.db import models as m
 
 class Comment(m.Model):
-    text = m.TextField(max_length=200)
+    text = m.TextField()
 
 class Museum(m.Model):
     id = m.PositiveIntegerField(primary_key=True)
@@ -15,21 +15,17 @@ class Museum(m.Model):
     email = m.EmailField()
     coment = m.ManyToManyField('Comment')
 
-    # def num_comments(self):
-    #     num_comments = Museum.objects.coment.count()
-    #     return num_comments
-
-class Added_Museum(m.Model):
-    museum = m.ForeignKey('Museum')
-    added = m.DateField(auto_now_add=True)
-
 class Collection(m.Model):
-    user = m.CharField(max_length=60)
+    user = m.CharField(max_length=60, primary_key=True)
     title = m.CharField(max_length=120)
-    css_page = m.TextField(default="")
-    museums = m.ManyToManyField('Added_Museum')
+    css_page = m.TextField()
 
     def save(self, *args, **kwargs):
         if not self.title:
             self.title = 'Pagina de ' + str(self.user)
         super().save(*args, **kwargs)
+
+class Added_Museum(m.Model):
+    added = m.DateTimeField(auto_now_add=True)
+    collection = m.ForeignKey('Collection', null=True)
+    museum = m.ForeignKey('Museum', null=True)

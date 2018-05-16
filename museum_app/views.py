@@ -1,16 +1,16 @@
 from django.http import HttpResponseNotFound, HttpResponseNotAllowed
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render, render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import views as auth_vs
 
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
-from museum_app.forms import Comment_Form
+from museum_app.forms import Comment_Form, CSS_Form, Title_Form
 
 # import defusedxml.ElementTree as ET
 import xml.etree.ElementTree as ET
-from museum_app.models import Museum, Collection
+from museum_app.models import Museum, Collection, Added_Museum
 from django.db.models import Count
 
 
@@ -109,28 +109,50 @@ def museums(request):
 def museum(request, ID):
     print(ID)
     if request.method == "GET":
-        m = Museum.objects.filter(id=ID)
+        m = Museum.objects.get(id=ID)
         f = Comment_Form()
         context = {'Museum': m, 'Form': f}
         return render(request, 'museo.html', context)
     elif request.method == "POST":
+        m = Museum.objects.get(id=ID)
         if request.POST.get('text'):
-            m = Museum.objects.get(id=ID)
-            # m.coment.add(request.POST.get('coment'))
             f = Comment_Form(request.POST)
-            # f.save(commit=False)
-            comm = f.save()
-            m.coment.add(comm)
+            coment = f.save()
+            m.coment.add(coment)
             m.save()
+        elif request.POST.get('add'):
+            # if request.user.username != 'root':
+            c = Collection.objects.get(user=request.user.username)
+            # idempotent
+            if not Added_Museum.objects.filter(museum=m, collection=c):
+                added_museum = Added_Museum(museum=m, collection=c).save()
+        return HttpResponseRedirect(request.path)
+    else:
+        return HttpResponseNotFound()
 
-            # Create a form instance with POST data.
-            # f = AuthorForm(request.POST)
-            # Create, but don't save the new author instance.
-            # new_comment = f.save(commit=False)
-            # # Save the new instance.
-            # new_comment.save()
-            # # Now, save the many-to-many data for the form.
-            # f.save_m2m()
+
+def user(request, user_name):
+    if request.method == "GET":
+        c = get_object_or_404(Collection, user=user_name)
+        am = Added_Museum.objects.filter(collection=c)
+        f = CSS_Form(instance=c)
+        f2 = Title_Form(instance=c)
+        context = {'Collection': c, 'Added_Museums': am, \
+                   'CSS_Form': f, 'Title_Form': f2}
+        return render(request, 'usuario.html', context)
+    elif request.method == "POST":
+        c = Collection.objects.get(user=user_name)
+        if request.POST.get('css_page'):
+            print('CSS')
+            f = CSS_Form(request.POST, instance=c)
+            # css_page = f.save()
+            # c(css_page=css_page)
+            # c.save()
+        elif request.POST.get('title'):
+            f = Title_Form(request.POST, instance=c)
+            # print(f)
+            # title = f.save()
+            # c(title=title).save()
         return HttpResponseRedirect(request.path)
     else:
         return HttpResponseNotFound()

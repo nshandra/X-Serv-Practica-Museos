@@ -1,0 +1,42 @@
+<!-- templates/usuario.html -->
+{% extends 'bstrp.html' %}
+{% block title %}{{ Collection.user }}{% endblock %}
+{% block content %}
+<main role="main" id="main" class="main_css container">
+	<div class="row"><h1>{{ Collection.title }}</h1></div>
+		{% for a_museum in Added_Museums %}
+			<div class="row">
+				<ul>
+					<a href="{{ a_museum.museum.url }}">{{ a_museum.museum.name }}</a><br>
+					{{ a_museum.museum.address }}<br>
+					<a href="/museos/{{ a_museum.museum.id }}">Más información</a><br>
+					{{ a_museum.added }}<br>
+				</ul>
+			</div>
+		{% endfor %}
+	<div class="row">
+		<p>
+			<form method="post">
+				<fieldset>
+					<legend>Custom CSS:</legend>
+					{% csrf_token %}
+					{{ CSS_Form }}
+					<input type="submit" value="Upload">
+				</fieldset>
+			</form>
+		</p>
+	</div>
+	<div class="row">
+		<p>
+			<form method="post">
+				<fieldset>
+					<legend>Change Title:</legend>
+					{% csrf_token %}
+					{{ Title_Form }}
+					<input type="submit" value="Change">
+				</fieldset>
+			</form>
+		</p>
+	</div>
+</main>
+{% endblock %}

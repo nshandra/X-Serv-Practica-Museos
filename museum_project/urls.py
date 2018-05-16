@@ -13,5 +13,6 @@ urlpatterns = [
     url(r'^museo/?$', vs.load_museums),
     url(r'^museos/?$', vs.museums),
     url(r'^museos/(\d+)$', vs.museum),
+    url(r'^(.+)$', vs.user),
     url(r'^$', vs.main_page)
 ]
