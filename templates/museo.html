@@ -11,27 +11,29 @@
 			{{ Museum.tel }}<br>
 			{{ Museum.email }}<br></p>
 	</div>
-	<div class="row">
-		<p>
-			<form method="post">
-				<fieldset>
-					<legend>Comment:</legend>
+	{% if user.is_authenticated %}
+		<div class="row">
+			<p>
+				<form method="post">
+					<fieldset>
+						<legend>Comment:</legend>
+						{% csrf_token %}
+						{{ Form }}
+						<input type="submit" value="Coment">
+					</fieldset>
+				</form>
+			</p>
+		</div>
+		<div class="row">
+			<p>
+				<form method="post">
 					{% csrf_token %}
-					{{ Form }}
-					<input type="submit" value="Coment">
-				</fieldset>
-			</form>
-		</p>
-	</div>
-	<div class="row">
-		<p>
-			<form method="post">
-				{% csrf_token %}
-				<input type="hidden" name="add" value="True">
-				<input type="submit" value="Add museum">
-			</form>
-		</p>
-	</div>
+					<input type="hidden" name="add" value="True">
+					<input type="submit" value="Add museum">
+				</form>
+			</p>
+		</div>
+	{% endif %}
 	<div class="row">
 		<h3>Comments:</h3>
 		{% for coment in Museum.coment.all %}

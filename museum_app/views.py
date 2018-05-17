@@ -131,6 +131,21 @@ def museum(request, ID):
         return HttpResponseNotFound()
 
 
+def load_custom_CSS(request):
+    print('load_custom_CSS')
+    if request.user.is_authenticated():
+        user = request.user.username
+        print(user)
+        try:
+            csssheet = Collection.objects.get(user=user)
+        except ObjectDoesNotExist:
+            print("Either the entry or blog doesn't exist.")
+        context = {'CSS': csssheet}
+        return render(request, 'custom.css', context, content_type="text/css")
+    else:
+        return HttpResponse('')
+
+
 def user(request, user_name):
     if request.method == "GET":
         c = get_object_or_404(Collection, user=user_name)
@@ -143,16 +158,11 @@ def user(request, user_name):
     elif request.method == "POST":
         c = Collection.objects.get(user=user_name)
         if request.POST.get('css_page'):
-            print('CSS')
-            f = CSS_Form(request.POST, instance=c)
-            # css_page = f.save()
-            # c(css_page=css_page)
-            # c.save()
+            f = CSS_Form(request.POST, instance=c).save()
         elif request.POST.get('title'):
-            f = Title_Form(request.POST, instance=c)
-            # print(f)
-            # title = f.save()
-            # c(title=title).save()
+            f = Title_Form(request.POST, instance=c).save()
+        else:
+            return HttpResponseNotFound()
         return HttpResponseRedirect(request.path)
     else:
         return HttpResponseNotFound()
@@ -193,7 +203,6 @@ def main_page(request):
         u = Collection.objects.all()
         # User_list = {'User_list': u}
         context = {'Museum_list': m, 'User_list': u}
-        print(m.count())
         return render(request, 'main.html', context)
     else:
         return HttpResponseNotFound()

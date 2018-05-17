@@ -7,6 +7,7 @@ from django.conf import settings
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^custom.css$', vs.load_custom_CSS),
     url(r'^signup/?$', vs.sign_up),
     url(r'^login/?$', login),
     url(r'^logout/?$', logout, {'next_page': settings.LOGOUT_REDIRECT_URL}),

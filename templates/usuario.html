@@ -14,29 +14,31 @@
 				</ul>
 			</div>
 		{% endfor %}
-	<div class="row">
-		<p>
-			<form method="post">
-				<fieldset>
-					<legend>Custom CSS:</legend>
-					{% csrf_token %}
-					{{ CSS_Form }}
-					<input type="submit" value="Upload">
-				</fieldset>
-			</form>
-		</p>
-	</div>
-	<div class="row">
-		<p>
-			<form method="post">
-				<fieldset>
-					<legend>Change Title:</legend>
-					{% csrf_token %}
-					{{ Title_Form }}
-					<input type="submit" value="Change">
-				</fieldset>
-			</form>
-		</p>
-	</div>
+	{% if user.is_authenticated %}
+		<div class="row">
+			<p>
+				<form method="post">
+					<fieldset>
+						<legend>Custom CSS:</legend>
+						{% csrf_token %}
+						{{ CSS_Form }}
+						<input type="submit" value="Upload">
+					</fieldset>
+				</form>
+			</p>
+		</div>
+		<div class="row">
+			<p>
+				<form method="post">
+					<fieldset>
+						<legend>Change Title:</legend>
+						{% csrf_token %}
+						{{ Title_Form }}
+						<input type="submit" value="Change">
+					</fieldset>
+				</form>
+			</p>
+		</div>
+	{% endif %}
 </main>
 {% endblock %}

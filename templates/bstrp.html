@@ -12,6 +12,11 @@
 
 	<title>{% block title %}Template{% endblock %}</title>
 
+	<!-- CSS of user -->
+	{% if user.is_authenticated %}
+		<link href="/custom.css" rel="stylesheet" type="text/css"/>
+	{% endif %}
+
 	<!-- Bootstrap core CSS -->
 	<link href="/static/bstrp_files/bootstrap.css" rel="stylesheet" type="text/css"/>
 
