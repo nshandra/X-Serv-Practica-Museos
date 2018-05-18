@@ -147,23 +147,59 @@ def load_custom_CSS(request):
 
 
 def user(request, user_name):
+    from django.core.paginator import Paginator
+
     if request.method == "GET":
         c = get_object_or_404(Collection, user=user_name)
         am = Added_Museum.objects.filter(collection=c)
+        page = request.GET.get('page', 1)
+
+        paginator = Paginator(am, 5)
+        try:
+            am2 = paginator.page(page)
+        except PageNotAnInteger:
+            am2 = paginator.page(1)
+        except EmptyPage:
+            am2 = paginator.page(paginator.num_pages)
+
         f = CSS_Form(instance=c)
         f2 = Title_Form(instance=c)
-        context = {'Collection': c, 'Added_Museums': am, \
+        context = {'Collection': c, 'Added_Museums': am2, \
                    'CSS_Form': f, 'Title_Form': f2}
         return render(request, 'usuario.html', context)
     elif request.method == "POST":
         c = Collection.objects.get(user=user_name)
-        if request.POST.get('css_page'):
-            f = CSS_Form(request.POST, instance=c).save()
+        if 'css_page' in request.POST:
+            f = CSS_Form(request.POST, instance=c)
+            print(f)
+            if f.is_valid():
+               f .save()
         elif request.POST.get('title'):
-            f = Title_Form(request.POST, instance=c).save()
+            f = Title_Form(request.POST, instance=c)
+            if f.is_valid():
+               f .save()
         else:
             return HttpResponseNotFound()
         return HttpResponseRedirect(request.path)
+    else:
+        return HttpResponseNotFound()
+
+
+def user_xml(request, user_name):
+    # from django.core import serializers
+    if request.method == "GET":
+        c = Collection.objects.get(user=user_name)
+        am = Added_Museum.objects.filter(collection=c)
+        m = []
+        for entry in am:
+            print(entry.museum)
+            m.append(entry.museum)
+        # data = serializers.serialize("xml", m, exclude=('coment'))
+        context = {'Collection': c, 'Museum_list': m}
+        data = render(request, 'Collection_to_xml.xml', context)
+        response = HttpResponse(data, content_type='text/xml')
+        response['Content-Disposition'] = 'attachment; filename="%s.xml"' %user_name
+        return response
     else:
         return HttpResponseNotFound()
 
@@ -196,8 +232,8 @@ def main_page(request):
     if request.method == "GET":
         # museos
         m = Museum.objects.exclude(coment__isnull=True)\
-        .annotate(num_coment=Count('coment'))\
-        .order_by('num_coment')
+            .annotate(num_coment=Count('coment'))\
+            .order_by('num_coment')
         # Museum_list = {'Museum_list': m}
         # Usuarios
         u = Collection.objects.all()

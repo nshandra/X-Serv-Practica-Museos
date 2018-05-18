@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Collection>
+    <autor>{{ Collection.user }}</autor>
+    <Museos>
+        {% for museum in Museum_list %}
+            <Museo>
+                <id>{{ museum.id }}</id>
+                <name>{{ museum.name }}</name>
+                <url>{{ museum.url }}</url>
+                <description>{{ museum.description }}</description>
+                <access>{{ museum.access }}</access>
+                <address>{{ museum.address }}</address>
+                <district>{{ museum.district }}</district>
+                <tel>{{ museum.tel }}</tel>
+                <email>{{ museum.email }}</email>
+            </Museo>
+        {% endfor %}
+    </Museos>
+</Collection>

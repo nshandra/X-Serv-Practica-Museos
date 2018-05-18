@@ -13,10 +13,10 @@ class Comment_Form(forms.ModelForm):
         self.fields['text'].label = False
 
 class CSS_Form(forms.ModelForm):
+    css_page = forms.CharField(required=False, widget = forms.Textarea(attrs={'rows':2, 'cols':30}))
     class Meta:
         model = Collection
         fields = ['css_page']
-        widgets = {'css_page': forms.Textarea(attrs={'rows':2, 'cols':30})}
 
     # remove label
     def __init__(self, *args, **kwargs):
