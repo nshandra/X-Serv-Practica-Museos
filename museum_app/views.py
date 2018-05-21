@@ -237,12 +237,11 @@ def museum(request, ID):
             if not Added_Museum.objects.filter(museum=m, collection=c):
                 added_museum = Added_Museum(museum=m, collection=c).save()
         elif request.POST.get('vote'):
-            if request.user.is_authenticated():
-                if not request.session.get('has_voted_%s' % ID, False):
-                    m = Museum.objects.get(id=ID)
-                    m.vote += 1
-                    m.save()
-                    request.session['has_voted_%s' % ID] = True
+            if not request.session.get('has_voted_%s' % ID, False):
+                m = Museum.objects.get(id=ID)
+                m.vote += 1
+                m.save()
+                request.session['has_voted_%s' % ID] = True
 
         return HttpResponseRedirect(request.path)
     else:
