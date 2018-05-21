@@ -1,26 +1,20 @@
 from django.http import HttpResponseNotFound, HttpResponseNotAllowed
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, render_to_response, get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import views as auth_vs
-
+from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from museum_app.forms import Comment_Form, CSS_Form, Title_Form
-
-# import defusedxml.ElementTree as ET
-import xml.etree.ElementTree as ET
 from museum_app.models import Museum, Collection, Added_Museum
 from django.db.models import Count
 
 
-def load_museums():
+def load_museums_xml():
+    import defusedxml.ElementTree as ET
     xmlFile = open('201132-0-museos.xml', "r")
     tree = ET.parse(xmlFile)
     root = tree.getroot()
-    # DESCARTA infoDataset 
+    # DESCARTA infoDataset
     root.remove(root.find('infoDataset'))
-    # resp = ''
     # ITERA SOBRE EL XML
     for contenido in root:
         for atributos in contenido:
@@ -32,7 +26,7 @@ def load_museums():
                 elif nombre == "NOMBRE":
                     name = atributo.text
                 elif nombre == "DESCRIPCION-ENTIDAD":
-                    descr = atributo.text
+                    descr = atributo.text + ' '
                 elif nombre == "HORARIO":
                     descr += atributo.text
                 elif nombre == "ACCESIBILIDAD":
@@ -50,9 +44,7 @@ def load_museums():
                         elif nombre == "NUM":
                             dirr1 += sub_atributo.text + ', '
                         elif nombre == "LOCALIDAD":
-                            dirr2 = sub_atributo.text + ', '
-                        elif nombre == "PROVINCIA":
-                            dirr2 += sub_atributo.text
+                            dirr2 = sub_atributo.text
                         elif nombre == "CODIGO-POSTAL":
                             pcode = sub_atributo.text + ', '
                         elif nombre == "DISTRITO":
@@ -74,8 +66,28 @@ def load_museums():
         Museum(id=id, name=name, url=url, description=descr,
                access=access, address=dirr, district=distr,
                tel=tel, email=email).save()
-        # resp += ID +'<br>'+name +'<br>'+descr +'<br>'+acc +'<br>'+url +'<br>'+distr +'<br>'+dirr +'<br>'+tel +'<br>'+email+'<br><br>'
-    # return HttpResponse('Job done')
+
+
+def load_museums_json():
+    import json
+    jsonFile = open('201132-0-museos.json', "r")
+    jdict = json.load(jsonFile)
+
+    for item in jdict['@graph']:
+        distr = item['address']['district']['@id'].split('/')[-1]
+        dirr = (item['address']['street-address'] + ', ' +
+                item['address']['postal-code'] + ', ' +
+                item['address']['locality'])
+        descr = (item['organization']['organization-desc'] + ', ' +
+                 item['organization']['schedule'])
+        if item['organization']['accesibility'] == '1':
+            acc = True
+        else:
+            acc = False
+        Museum(id=item['id'], name=item['title'], url=item['relation'],
+               description=descr, access=acc, address=dirr,
+               district=distr).save()
+
 
 def museums_lists(filter_key):
     if filter_key and filter_key != 'ALL':
@@ -99,8 +111,13 @@ def museums(request):
         if request.POST.get('district'):
             response.set_cookie('filter', request.POST.get('district'))
         elif request.POST.get('refresh'):
-            print('REFRESH')
-            load_museums()
+            refresh = request.POST.get('refresh')
+            if refresh == 'xml':
+                print('REFRESH XML')
+                load_museums_xml()
+            elif refresh == 'json':
+                print('REFRESH JSON')
+                load_museums_json()
         return response
     else:
         return HttpResponseNotFound()
@@ -126,6 +143,14 @@ def museum(request, ID):
             # idempotent
             if not Added_Museum.objects.filter(museum=m, collection=c):
                 added_museum = Added_Museum(museum=m, collection=c).save()
+        elif request.POST.get('vote'):
+            if request.user.is_authenticated():
+                if not request.session.get('has_voted_%s' % ID, False):
+                    m = Museum.objects.get(id=ID)
+                    m.vote += 1
+                    m.save()
+                    request.session['has_voted_%s' % ID] = True
+
         return HttpResponseRedirect(request.path)
     else:
         return HttpResponseNotFound()
@@ -164,7 +189,7 @@ def user(request, user_name):
 
         f = CSS_Form(instance=c)
         f2 = Title_Form(instance=c)
-        context = {'Collection': c, 'Added_Museums': am2, \
+        context = {'Collection': c, 'Added_Museums': am2,
                    'CSS_Form': f, 'Title_Form': f2}
         return render(request, 'usuario.html', context)
     elif request.method == "POST":
@@ -173,11 +198,11 @@ def user(request, user_name):
             f = CSS_Form(request.POST, instance=c)
             print(f)
             if f.is_valid():
-               f .save()
+                f.save()
         elif request.POST.get('title'):
             f = Title_Form(request.POST, instance=c)
             if f.is_valid():
-               f .save()
+                f.save()
         else:
             return HttpResponseNotFound()
         return HttpResponseRedirect(request.path)
@@ -198,7 +223,26 @@ def user_xml(request, user_name):
         context = {'Collection': c, 'Museum_list': m}
         data = render(request, 'Collection_to_xml.xml', context)
         response = HttpResponse(data, content_type='text/xml')
-        response['Content-Disposition'] = 'attachment; filename="%s.xml"' %user_name
+        cd = 'attachment; filename="%s.xml"' % user_name
+        response['Content-Disposition'] = cd
+        return response
+    else:
+        return HttpResponseNotFound()
+
+
+def user_json(request, user_name):
+    if request.method == "GET":
+        c = Collection.objects.get(user=user_name)
+        am = Added_Museum.objects.filter(collection=c)
+        m = []
+        for entry in am:
+            print(entry.museum)
+            m.append(entry.museum)
+        context = {'Collection': c, 'Museum_list': m}
+        data = render(request, 'Collection_to_json.json', context)
+        response = HttpResponse(data, content_type='text/json')
+        cd = 'attachment; filename="%s.json"' % user_name
+        response['Content-Disposition'] = cd
         return response
     else:
         return HttpResponseNotFound()
@@ -210,20 +254,63 @@ def sign_up(request):
         return render(request, 'registration/signup.html', {'form': f})
     elif request.method == "POST":
         f = UserCreationForm(request.POST)
-        if f.is_valid():
-            f.save()
-            Collection(user=f.cleaned_data['username']).save()
-            messages.success(request, 'Account created successfully')
+        ban_list = ['museos', 'xml', 'json', 'set_language',
+                    'lastcomments', 'topmuseums', 'logout',
+                    'login', 'signup', 'custom.css', 'admin']
+        u = request.POST.get('username')
+        print(u)
+        if u not in ban_list:
+            if f.is_valid():
+                f.save()
+                Collection(user=f.cleaned_data['username']).save()
+                messages.success(request, 'Account created successfully')
             return HttpResponseRedirect('signup')
         else:
-            messages.warning(request, 'Username already exist and/or passwords don\'t match up')
-            # print(f.cleaned_data['password1'])
-            # print(f.cleaned_data['password2'])
-            # if f.cleaned_data['password1'] !=  f.cleaned_data['password2']:
-            #     messages.warning(request, 'Check password')
-            # else:
-            #     messages.warning(request, 'Username alredy exist')
+            w = 'Username already exist and/or passwords don\'t match up'
+            messages.warning(request, w)
             return HttpResponseRedirect('signup')
+    else:
+        return HttpResponseNotFound()
+
+
+def main_xml(request):
+    if request.method == "GET":
+        m = Museum.objects.exclude(coment__isnull=True)\
+            .annotate(num_coment=Count('coment'))\
+            .order_by('num_coment')
+        u = Collection.objects.all()
+        context = {'Museum_list': m, 'User_list': u}
+        data = render(request, 'main_to_xml.xml', context)
+        response = HttpResponse(data, content_type='text/xml')
+        response['Content-Disposition'] = 'attachment; filename="main.xml"'
+        return response
+    else:
+        return HttpResponseNotFound()
+
+
+def main_json(request):
+    if request.method == "GET":
+        m = Museum.objects.exclude(coment__isnull=True)\
+            .annotate(num_coment=Count('coment'))\
+            .order_by('num_coment')
+        u = Collection.objects.all()
+        context = {'Museum_list': m, 'User_list': u}
+        data = render(request, 'main_to_json.json', context)
+        response = HttpResponse(data, content_type='text/json')
+        response['Content-Disposition'] = 'attachment; filename="main.json"'
+        return response
+    else:
+        return HttpResponseNotFound()
+
+
+def set_language(request):
+    from django.utils import translation
+    if request.method == "POST":
+        if request.POST.get('language'):
+            user_language = request.POST.get('language')
+            translation.activate(user_language)
+            request.session[translation.LANGUAGE_SESSION_KEY] = user_language
+        return HttpResponseRedirect(request.POST.get('next'))
     else:
         return HttpResponseNotFound()
 
@@ -233,76 +320,10 @@ def main_page(request):
         # museos
         m = Museum.objects.exclude(coment__isnull=True)\
             .annotate(num_coment=Count('coment'))\
-            .order_by('num_coment')
-        # Museum_list = {'Museum_list': m}
+            .order_by('-num_coment')[:5]
         # Usuarios
         u = Collection.objects.all()
-        # User_list = {'User_list': u}
         context = {'Museum_list': m, 'User_list': u}
         return render(request, 'main.html', context)
     else:
         return HttpResponseNotFound()
-
-
-# @csrf_exempt
-# def get_page(request, req_name):
-#     if request.method == "PUT":
-#         if request.user.is_authenticated():
-#             Pages(name=req_name, page=request.body).save()
-#             return HttpResponse("Page submitted.<br><br><a href=/>Home</a>")
-#         else:
-#             return HttpResponseNotFound("<h1>Login to add pages. "
-#                                         "<a href=/login>login</a></h1>")
-#     else:
-#         try:
-#             req_page = login_view(request)
-#             req_page += Pages.objects.get(name=req_name).page
-#             if request.method == "GET":
-#                 return HttpResponse(req_page)
-#             else:
-#                 return HttpResponseNotAllowed("['GET', 'PUT']",
-#                                               "<h1>405 Not Allowed</h1>")
-#         except Pages.DoesNotExist:
-#                 return HttpResponseNotFound("<h1>Page does not exist.</h1>")
-
-
-# def ann_main(request):
-#     Pages_list = {'Pages_list': Pages.objects.all()}
-#     return render(request, 'ann_main.html', Pages_list)
-
-
-# def ann_get_page(request, req_name):
-#     if request.method == "GET":
-#         try:
-#             content = {'content': Pages.objects.get(name=req_name)}
-#             return render(request, 'page.html', content)
-#         except Pages.DoesNotExist:
-#                 return HttpResponseNotFound("<h1>Page does not exist.</h1>")
-#     else:
-#         return HttpResponseNotAllowed("['GET']", "<h1>405 Not Allowed</h1>")
-
-
-# def edit_main(request):
-#     Pages_list = {'Pages_list': Pages.objects.all()}
-#     return render(request, 'edit_main.html', Pages_list)
-
-
-# @csrf_exempt
-# def edit_page(request, req_name):
-#     print(request.user.is_authenticated())
-#     if request.user.is_authenticated():
-#         if request.method == "GET":
-#             try:
-#                 content = {'content': Pages.objects.get(name=req_name)}
-#                 return render(request, 'edit.html', content)
-#             except Pages.DoesNotExist:
-#                 return HttpResponseNotFound("<h1>Page does not exist.</h1>")
-#         elif request.method == "POST":
-#             Pages(name=req_name, page=request.POST["page"]).save()
-#             return HttpResponseRedirect('/edit/'+req_name)
-#         else:
-#             return HttpResponseNotAllowed("['GET', 'POST']",
-#                                           "<h1>405 Not Allowed</h1>")
-#     else:
-#         return HttpResponseNotFound("<b>Login to edit pages. "
-#                                     "<a href=/login>login</a></b>")

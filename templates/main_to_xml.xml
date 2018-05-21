@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Main_page>
+    <Museos>
+        {% for museum in Museum_list %}
+            <Museo>
+                <url>{{ museum.url }}</url>
+                <name>{{ museum.name }}</name>
+                <address>{{ museum.address }}</address>
+                <id>{{ museum.id }}</id>
+            </Museo>
+        {% endfor %}
+    </Museos>
+    <user_pages>
+        {% for collection in User_list %}
+            <page>
+                <title>{{ collection.title }}</title>
+                <user>{{ collection.user }}</user>
+            </page>
+        {% endfor %}
+    </user_pages>
+</Main_page>

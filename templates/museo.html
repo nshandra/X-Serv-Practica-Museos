@@ -1,44 +1,54 @@
 <!-- templates/museo.html -->
-{% extends 'bstrp.html' %}
+{% extends 'base.html' %}
+{% load i18n %}
+
 {% block title %}{{ Museum.name }}{% endblock %}
 {% block content %}
 <main role="main" id="main" class="main_css container">
-	<div class="row"><h1>{{ Museum.name }}</h1></div>
-	<div class="row">
-		<p><a href="{{ Museum.url }}">LINK</a></p>
-		<p>{{ Museum.description }}<br></p>
-		<p>{{ Museum.address }}<br>
-			{{ Museum.tel }}<br>
-			{{ Museum.email }}<br></p>
-	</div>
-	{% if user.is_authenticated %}
+	<div class="jumbotron bg-light">
+		<div class="row"><h1>{{ Museum.name }}</h1></div>
 		<div class="row">
-			<p>
-				<form method="post">
-					<fieldset>
-						<legend>Comment:</legend>
-						{% csrf_token %}
-						{{ Form }}
-						<input type="submit" value="Coment">
-					</fieldset>
-				</form>
-			</p>
+			<p><a href="{{ Museum.url }}">LINK</a> {% trans "Score" %}: {{ Museum.vote }}</p>
+			<p>{{ Museum.description }}<br></p>
+			<p>{{ Museum.address }}<br>
+				{{ Museum.tel }}<br>
+				{{ Museum.email }}<br></p>
 		</div>
-		<div class="row">
-			<p>
-				<form method="post">
+		<div class="form-row align-items-center">
+		{% if user.is_authenticated %}
+			<div class="col-auto">
+				<form class="form-inline" method="post" id="comment_form">
 					{% csrf_token %}
-					<input type="hidden" name="add" value="True">
-					<input type="submit" value="Add museum">
+					{{ Form }}
 				</form>
-			</p>
+			</div>
+			<div class="col-auto">
+				<button type="submit" class="btn btn-dark" form="comment_form">{% trans "Comment" %}</button>
+			</div>
+			{% endif %}
+			{% if user.is_authenticated %}
+				<div class="col-auto">
+					<form class="form-inline" method="post">
+						{% csrf_token %}
+						<input type="hidden" name="add" value="True">
+						<button type="submit" class="btn btn-dark">{% trans "Add museum" %}</button>
+					</form>
+				</div>
+			{% endif %}
+			<div class="col-auto">
+				<form class="form-inline" method="post">
+					{% csrf_token %}
+					<input type="hidden" name="vote" value="True">
+					<button type="submit" class="btn btn-dark">{% trans "Vote museum" %}</button>
+				</form>
+			</div>
 		</div>
-	{% endif %}
-	<div class="row">
-		<h3>Comments:</h3>
-		{% for coment in Museum.coment.all %}
-			<p>{{ coment.text }}</p>
-		{% endfor %}
 	</div>
+	<h3>{% trans "Comments" %}:</h3>
+		{% for coment in Museum.coment.all %}
+			<div id="museum_comment" class="card mb-2 bg-light w-50">
+				{{ coment.text }}
+			</div>
+		{% endfor %}
 </main>
 {% endblock %}

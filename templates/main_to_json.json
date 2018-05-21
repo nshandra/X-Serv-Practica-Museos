@@ -1,0 +1,24 @@
+{
+	"Main_page":{
+		"Museos":{
+		{% for museum in Museum_list %}
+			"{{ museum.id }}":{"url":"{{ museum.url }}",
+					"name":"{{ museum.name }}",
+					{% if forloop.last %}
+						"address":"{{ museum.address }}"}
+					{% else %}
+						"address":"{{ museum.address }}"},
+					{% endif %}
+		{% endfor %}
+		},
+		"user_pages":{
+		{% for collection in User_list %}
+			{% if forloop.last %}
+				"{{ collection.user }}":{"title":"{{ collection.title }}"}
+			{% else %}
+				"{{ collection.user }}":{"title":"{{ collection.title }}"},
+			{% endif %}
+		{% endfor %}
+		}
+	}
+}

@@ -1,4 +1,4 @@
-<!-- templates/base.html -->
+<!-- templates/registration/base.html -->
 {% load static %}
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
@@ -38,31 +38,6 @@
 		{% with 'banner_'|add:LANGUAGE_CODE|add:'.png' as bnr %}
 		  <img class="nav-item justify-content-start" id="banner" src="{% static bnr %}" alt="MUSEOS">
 		{% endwith %}
-		<!-- LOGIN BAR -->
-		<div class="nav-item justify-content-end" id="login_bar">
-			{% if user.is_authenticated %}
-				<p class="loggedin_text">{% trans "Hi" %}, {{ user.username }}</p>
-				<form class="form-inline justify-content-end" method="get" action="/logout">
-					<input type="hidden" name="next" value="{{ request.get_full_path }}">
-					<button type="submit" class="btn btn-warning">Logout</button>
-				</form>
-			{% else %}
-				<p><form class="form-inline" method="post" action="/login">
-					{% csrf_token %}
-					<label class="sr-only" for="id_username">{% trans "Username" as usr %}:</label>
-					<input id="id_username" class="form-control mr-sm-2" type="text" name="username" placeholder={{ usr }} maxlength="30">
-
-					<label class="sr-only" for="id_password">{% trans "Password" as psswd %}:</label>
-					<input id="id_password" class="form-control mr-sm-2" type="password" name="password" placeholder={{ psswd }}>
-
-					<input type="hidden" name="next" value="{{ request.get_full_path }}"/>
-					<button type="submit" class="btn btn-warning">Log in</button>
-				</form></p>
-				<form class="form-inline justify-content-end" method="get" action="/signup">
-					<button type="submit" class="btn btn-warning">Sign up</button>
-				</form>
-			{% endif %}
-		</div>
 	</nav>
 	<!-- OPTION BAR -->
 	<nav class="navbar navbar-expand-md navbar-dark bg-dark" id="option_bar">
@@ -121,18 +96,6 @@
 		</div>
 	</footer>
 </body>
-
-<!-- Scripts -->
-<script type="text/javascript">
-	function myfunc(ul) {
-		var className = ul.getAttribute("class");
-		if(className=="nav-item") {
-			ul.className += " active";
-		} else {
-			ul.className = "nav-item";
-		}
-	}
-</script>
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->

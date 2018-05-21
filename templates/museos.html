@@ -1,29 +1,50 @@
 <!-- templates/museos.html -->
-{% extends 'bstrp.html' %}
-{% block title %}Museos{% endblock %}
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Museums" %}{% endblock %}
 {% block content %}
+{% trans "Load museums" as load %}
 <main role="main" id="main" class="main_css container">
-	<form class="form-inline" method="post">
-		{% csrf_token %}
-		<fieldset>
-			<legend>Filter by districts:</legend>
-			<select name="district">
-				<option value="ALL">TODOS</option>
-				{% for district in District_list %}
-					<option value="{{ district }}">{{ district }}</option>
-				{% endfor %}
-		  </select>
-			<input type="submit" value="Filter"/>
-		</fieldset>
-	</form>
-	<form class="form-inline" method="post">
-		{% csrf_token %}
-		<input type="hidden" name="refresh" value="True">
-		<input type="hidden" name="next" value="{{ request.get_full_path }}">
-		<input type="submit" value="Refresh Museum DB">
-	</form>
-	<div class="row">
-		<div class="col-md-8">
+	<div class="d-inline-flex p-4 border flex-wrap">
+		<div class="form-row align-items-center">
+			<div class="col-auto">
+				<form class="form-inline" method="post">
+					{% csrf_token %}
+					<fieldset>
+						<legend>{{ load }}:</legend>
+						<select class="form-control" name="refresh">
+							<option value="xml">XML</option>
+							<option value="json">JSON</option>
+						</select>
+						<input type="hidden" name="next" value="{{ request.get_full_path }}">
+						<button type="submit" class="btn btn-dark">{{ load }}</button>
+					</fieldset>
+				</form>
+			</div>
+			<div class="col-auto">
+				<form class="form-inline" method="post">
+					{% csrf_token %}
+					<fieldset>
+						<legend>{% trans "Filter by districts" %}:</legend>
+						<select class="form-control" name="district">
+							<option value="ALL">{% trans "ALL" %}</option>
+							{% for district in District_list %}
+								{% if request.COOKIES.filter == district %}
+									<option value="{{ district }}" selected>{{ district }}</option>
+								{% else %}
+									<option value="{{ district }}">{{ district }}</option>
+								{% endif %}
+							{% endfor %}
+						</select>
+						<button type="submit" class="btn btn-dark">{% trans "Filter" %}</button>
+					</fieldset>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="row pt-2">
+		<div class="col">
 			{% for museum in Museum_list %}
 				<a href="/museos/{{ museum.id }}">{{ museum.name }}</a><br>
 			{% endfor %}

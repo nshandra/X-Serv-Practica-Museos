@@ -1,27 +1,24 @@
 <!-- templates/main.html -->
-{% extends 'bstrp.html' %}
+{% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Templates Home{% endblock %}
+{% block title %}{% trans "Home" %}{% endblock %}
 {% block content %}
 <main role="main" id="main" class="main_css container">
-	<!-- <div class="starter-template">
-		<h1>Bootstrap starter template</h1>
-		<p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
-	</div> -->
 	<div class="row">
-		<div class="col-md-8">
+		<div class="col-md-9">
 			{% for museum in Museum_list %}
-				<ul>
-					<a href="{{ museum.url }}">{{ museum.name }}</a><br>
-					{{ museum.address }}<br>
-					<a href="/museos/{{ museum.id }}">Más información</a><br>
-				</ul>
+				<div id="main_card">
+					<a id="museum_title" href="{{ museum.url }}">{{ museum.name }}</a>
+					<p id="museum_content">{{ museum.address }}<br>
+					<a href="/museos/{{ museum.id }}">Más información</a></p>
+				</div>
 			{% endfor %}
 		</div>
-		<aside class="col-md-4">
+		<aside class="col-md-3 card bg-light border-dark" id="side_card">
 			{% for collection in User_list %}
-				<a href="/{{ collection.user }}">{{ collection.title }}</a>
-				by {{ collection.user }}<br>
+				<p><a href="/{{ collection.user }}">{{ collection.title }}</a><br>
+				{% trans "by" %}: {{ collection.user }}<br>
 			{% endfor %}
 		</aside>
 	</div>

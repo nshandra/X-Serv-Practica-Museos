@@ -1,86 +1,98 @@
 <!-- templates/usuario.html -->
-{% extends 'bstrp.html' %}
+{% extends 'base.html' %}
+{% load i18n %}
+
 {% block title %}{{ Collection.user }}{% endblock %}
 {% block content %}
 <main role="main" id="main" class="main_css container">
-	<div class="row"><h1>{{ Collection.title }}</h1></div>
-	{% for a_museum in Added_Museums %}
-		<div class="row">
-			<ul>
-				<a href="{{ a_museum.museum.url }}">{{ a_museum.museum.name }}</a><br>
-				{{ a_museum.museum.address }}<br>
-				<a href="/museos/{{ a_museum.museum.id }}">Más información</a><br>
-				{{ a_museum.added }}<br>
-			</ul>
+	<div class="row border-bottom border-dark">
+		<h1 id="cl_title">{{ Collection.title }}</h1>
+	</div>
+	<div class="row" id="cl_main_row">
+		<div class="col-md-8">
+			{% for a_museum in Added_Museums %}
+				<div class="row">
+					<ul>
+						<a id="museum_title" href="{{ a_museum.museum.url }}">{{ a_museum.museum.name }}</a><br>
+						<p id="museum_content">{{ a_museum.museum.address }}<br>
+						<a href="/museos/{{ a_museum.museum.id }}">{% trans "More information" %}</a><br>
+						{{ a_museum.added }}</p>
+					</ul>
+				</div>
+			{% endfor %}
+			{% if Added_Museums.has_other_pages %}
+				<nav id="cl_pag">
+					<ul class="pagination">
+						{% if Added_Museums.has_previous %}
+							<li class="page-item">
+								<a class="page-link" href="?page={{ Added_Museums.previous_page_number }}">&laquo;</a>
+							</li>
+						{% else %}
+							<li class="page-item disabled">
+								<span class="page-link">&laquo;</span>
+							</li>
+						{% endif %}
+						{% for page_n in Added_Museums.paginator.page_range %}
+							{% if Added_Museums.number == page_n %}
+								<li class="page-item active">
+									<span class="page-link">
+										{{ page_n }} <span class="sr-only">(current)</span>
+									</span>
+								</li>
+							{% else %}
+								<li class="page-item">
+									<a class="page-link" href="?page={{ page_n }}">{{ page_n }}</a>
+								</li>
+							{% endif %}
+						{% endfor %}
+						{% if Added_Museums.has_next %}
+							<li class="page-item">
+								<a class="page-link" href="?page={{ Added_Museums.next_page_number }}">&raquo;</a>
+							</li>
+						{% else %}
+							<li class="page-item disabled">
+								<span class="page-link">&raquo;</span>
+							</li>
+						{% endif %}
+					</ul>
+				</nav>
+			{% endif %}
 		</div>
-	{% endfor %}
-	{% if Added_Museums.has_other_pages %}
-		<nav aria-label="Page navigation example">
-			<ul class="pagination">
-				{% if Added_Museums.has_previous %}
-					<li class="page-item">
-						<a class="page-link" href="?page={{ Added_Museums.previous_page_number }}">&laquo;</a>
-					</li>
-				{% else %}
-					<li class="page-item disabled">
-						<span class="page-link">&laquo;</span>
-					</li>
+		<aside class="col-md-4">
+			<div id="side_card" class="card bg-light border-dark">
+				{% if user.is_authenticated and user.username == Collection.user %}
+					<form id="css_form" class="form-row" method="post">
+						<fieldset>
+							<legend>{% trans "Custom CSS" %}:</legend>
+							{% csrf_token %}
+							{{ CSS_Form }}
+						</fieldset>
+					</form>
+					<div class="form-row">
+						<button type="submit" class="btn btn-dark" form="css_form">{% trans "Upload" %}</button>
+					</div>
+					<div class="p-2 border-bottom border-dark"></div>
+					<form class="form-row" method="post">
+						<fieldset>
+							<legend>{% trans "Change Title" %}:</legend>
+							{% csrf_token %}
+							{{ Title_Form }}
+							<button type="submit" class="btn btn-dark">{% trans "Change" %}</button>
+						</fieldset>
+					</form>
+					<div class="p-2 border-bottom border-dark"></div>
 				{% endif %}
-				{% for page_n in Added_Museums.paginator.page_range %}
-					{% if Added_Museums.number == page_n %}
-						<li class="page-item active">
-							<span class="page-link">
-								{{ page_n }} <span class="sr-only">(current)</span>
-							</span>
-						</li>
-					{% else %}
-						<li class="page-item">
-							<a class="page-link" href="?page={{ page_n }}">{{ page_n }}</a>
-						</li>
-					{% endif %}
-				{% endfor %}
-				{% if Added_Museums.has_next %}
-					<li class="page-item">
-						<a class="page-link" href="?page={{ Added_Museums.next_page_number }}">&raquo;</a>
-					</li>
-				{% else %}
-					<li class="page-item disabled">
-						<span class="page-link">&raquo;</span>
-					</li>
-				{% endif %}
-			</ul>
-		</nav>
-	{% endif %}
-	{% if user.is_authenticated %}
-		<div class="row">
-			<p>
-				<form method="post">
-					<fieldset>
-						<legend>Custom CSS:</legend>
-						{% csrf_token %}
-						{{ CSS_Form }}
-						<input type="submit" value="Upload">
-					</fieldset>
-				</form>
-			</p>
-		</div>
-		<div class="row">
-			<p>
-				<form method="post">
-					<fieldset>
-						<legend>Change Title:</legend>
-						{% csrf_token %}
-						{{ Title_Form }}
-						<input type="submit" value="Change">
-					</fieldset>
-				</form>
-			</p>
-		</div>
-		<div class="row">
-			<p>
-				<a href="/{{ Collection.user }}/xml">Canal XML para los museos seleccionados</a>
-			</p>
-		</div>
-	{% endif %}
+				<div class="form-row">
+					<form class="form" method="get">
+						<fieldset>
+							<legend>{% trans "Channel for selected museums" %}:</legend>
+							<button type="submit" class="btn btn-dark" formaction="{{ request.get_full_path }}/xml">XML</button>
+							<button type="submit" class="btn btn-dark" formaction="{{ request.get_full_path }}/json">JSON</button>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</aside>
+	</div>
 </main>
 {% endblock %}

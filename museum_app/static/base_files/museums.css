@@ -1,0 +1,71 @@
+.banner {
+  color: white;
+}
+.main_css {
+  padding-top: 2rem;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 80px;
+}
+
+#login_bar, #lang_button {
+  padding-right: 2rem;
+}
+
+#banner {
+  padding-left: 2rem;
+  font-size: 5rem;
+}
+
+#option_bar {
+  padding-left: 2rem;
+}
+
+#main_card {
+  padding: .5rem;
+}
+
+#museum_title {
+  font-size: 1.5rem;
+}
+
+#museum_content {
+  padding-left: 1rem;
+}
+
+#museum_comment {
+  padding: .5rem;
+}
+
+#cl_title {
+  font-size: 4rem;
+  width: 100%;
+}
+
+#cl_main_row {
+  padding-top: 2rem;
+}
+
+#side_card {
+  padding: 1rem;
+}
+
+.loggedin_text {
+  font-size: 1.5rem;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  height: 60px;
+  line-height: 60px;
+  background-color: #f5f5f5;
+}

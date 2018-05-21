@@ -1,0 +1,144 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-21 05:41+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: museum_app/feeds.py:8
+msgid "Most commented museums"
+msgstr "Museos más comentados"
+
+#: museum_app/feeds.py:10
+msgid "List top five museums by number of comments."
+msgstr "Lista de los cinco museos con más comentarios."
+
+#: museum_app/feeds.py:27
+msgid "Last comments"
+msgstr "Últimos comentarios"
+
+#: museum_app/feeds.py:29
+msgid "List five last comments."
+msgstr "Lista de los últimos cinco comentarios."
+
+#: museum_app/forms.py:11
+msgid "comment"
+msgstr "comentario"
+
+#: museum_project/settings.py:96
+msgid "English"
+msgstr "Ingles"
+
+#: museum_project/settings.py:97
+msgid "Spanish"
+msgstr "Español"
+
+#: templates/base.html:44
+msgid "Hi"
+msgstr "Hola"
+
+#: templates/base.html:52
+msgid "Username"
+msgstr "Nombre de usuario"
+
+#: templates/base.html:55
+msgid "Password"
+msgstr "Contraseña"
+
+#: templates/base.html:72 templates/main.html:5
+msgid "Home"
+msgstr "Inicio"
+
+#: templates/base.html:80
+msgid "All"
+msgstr "Todos"
+
+#: templates/base.html:87
+msgid "About"
+msgstr "About"
+
+#: templates/base.html:112
+msgid "This application uses data from the open data portal of Madrid."
+msgstr ""
+"Esta aplicación utiliza datos del portal de datos abiertos de la ciudad de "
+"Madrid"
+
+#: templates/main.html:21
+msgid "by"
+msgstr "por"
+
+#: templates/museo.html:11
+msgid "Score"
+msgstr "Puntuación"
+
+#: templates/museo.html:26
+msgid "Comment"
+msgstr "Comentar"
+
+#: templates/museo.html:34
+msgid "Add museum"
+msgstr "Añadir museo"
+
+#: templates/museo.html:42
+msgid "Vote museum"
+msgstr "Votar museo"
+
+#: templates/museo.html:47
+msgid "Comments"
+msgstr "Comentarios"
+
+#: templates/museos.html:5
+msgid "Museums"
+msgstr "Museos"
+
+#: templates/museos.html:7
+msgid "Load museums"
+msgstr "Cargar museos"
+
+#: templates/museos.html:29
+msgid "Filter by districts"
+msgstr "Filtrar por distritos"
+
+#: templates/museos.html:31
+msgid "ALL"
+msgstr "TODOS"
+
+#: templates/museos.html:40
+msgid "Filter"
+msgstr "Filtrar"
+
+#: templates/usuario.html:18
+msgid "More information"
+msgstr "Más información"
+
+#: templates/usuario.html:66
+msgid "Custom CSS"
+msgstr "CSS personalizado"
+
+#: templates/usuario.html:72
+msgid "Upload"
+msgstr "Establecer"
+
+#: templates/usuario.html:77
+msgid "Change Title"
+msgstr "Cambiar título"
+
+#: templates/usuario.html:80
+msgid "Change"
+msgstr "Cambiar"
+
+#: templates/usuario.html:87
+msgid "Channel for selected museums"
+msgstr "Canal para los museos seleccionados"

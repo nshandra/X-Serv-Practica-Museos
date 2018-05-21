@@ -1,16 +1,31 @@
 <!-- templates/registration/signup.html -->
-{% if messages %}
-	<ul>
-		{% for message in messages %}
-		<li>{{ message }}</li>
-		{% endfor %}
-	</ul>
-{% endif %}
-<form method="post">
-	<fieldset>
-		<legend>Sign Up:</legend>
-		{% csrf_token %}
-		{{ form.as_p }}
-		<button type="submit">Sign Up</button>
-	</fieldset>
-</form>
+{% extends 'registration/reg_base.html' %}
+{% load i18n %}
+
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+
+<main role="main" id="main" class="main_css container">
+	<div class="card bg-light border-dark mx-auto p-3">
+		{% if messages %}
+			<div class="mx-auto">
+				<ul class="messages">
+					{% for message in messages %}
+						<li>{{ message }}</li>
+					{% endfor %}
+				</ul>
+			</div>
+		{% endif %}
+		<div class="mx-auto">
+			<form class="form" method="post">
+				<fieldset>
+					<legend>Sign Up:</legend>
+					{% csrf_token %}
+					{{ form.as_p }}
+					<button class="btn btn-warning" type="submit">Sign Up</button>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+</main>
+{% endblock %}

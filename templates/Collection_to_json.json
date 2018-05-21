@@ -1,0 +1,21 @@
+{
+	"Collection":{
+		"autor":"{{ Collection.user }}",
+		"Museos":{
+		{% for museum in Museum_list %}
+			"{{ museum.id }}":{"name":"{{ museum.name }}",
+			"url":"{{ museum.url }}",
+			"description":"{{ museum.description }}",
+			"access":"{{ museum.access }}",
+			"address":"{{ museum.address }}",
+			"district":"{{ museum.district }}",
+			"tel":"{{ museum.tel }}",
+			{% if forloop.last %}
+				"email":"{{ museum.email }}"}
+			{% else %}
+				"email":"{{ museum.email }}"},
+			{% endif %}
+		{% endfor %}
+		}
+	}
+}
