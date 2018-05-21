@@ -17,7 +17,7 @@ Repositorio de inicio de la práctica final - Curso 2017/2018
     - La mayor parte de los estilos CSS se han realizado con Bootstrap
     - El banner sirve de enlace a la pagina principal
     - Cualquier usuario podrá indicar que quiere una vista del sitio que incluya sólo los museos mediante un botón en la barra de opciones.
-
+    - Lista de usuarios: User1, Usuario2, Usuario_3, Usuario5, Usuario4, Usuario6. Todos con contraseña: .
 - Lista de funcionalidades opcionales que se hayan implementado, y breve descripción de cada una.
 
     - Inclusión de un favicon del sitio.
