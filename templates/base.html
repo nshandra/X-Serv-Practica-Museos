@@ -17,8 +17,6 @@
 
 	<title>{% block title %}Template{% endblock %}</title>
 
-	<!-- Bootstrap core CSS -->
-	<!-- <link href="/static/base_files/bootstrap.css" rel="stylesheet" type="text/css"/> -->
 	<!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
@@ -36,7 +34,7 @@
 	<nav class="navbar navbar-dark bg-dark banner" id="upper_bar">
 		<!-- BANNER -->
 		{% with 'banner_'|add:LANGUAGE_CODE|add:'.png' as bnr %}
-		  <img class="nav-item justify-content-start" id="banner" src="{% static bnr %}" alt="MUSEOS">
+			<a href="/"><img class="nav-item justify-content-start" id="banner" src="{% static bnr %}" alt="MUSEOS"></a>
 		{% endwith %}
 		<!-- LOGIN BAR -->
 		<div class="nav-item justify-content-end" id="login_bar">
@@ -79,6 +77,25 @@
 			{% endif %}
 				<a class="nav-link" href="/museos">{% trans "All" %}</a>
 			</li>
+			{% if request.COOKIES.access_only == 'True' %}
+					<li class="nav-item">
+						<form class="form-inline" method="post" action="/accessonly">
+							{% csrf_token %}
+							<input type="hidden" name="next" value="{{ request.path }}"/>
+							<input type="hidden" name="access_only" value="False"/>
+							<button class="nav-link btn btn-link active" type="submit" formmethod="post">{% trans "Museums only" %}</button>
+						</form>
+			{% else %}
+					<li class="nav-item">
+						<form class="form-inline" method="post" action="/accessonly">
+							{% csrf_token %}
+							<input type="hidden" name="next" value="{{ request.path }}"/>
+							<input type="hidden" name="access_only" value="True"/>
+							<button class="nav-link btn btn-link" type="submit" formmethod="post">{% trans "Museums only" %}</button>
+						</form>
+			{% endif %}
+			</li>
+
 			{% if request.path == '/about' %}
 				<li class="nav-item active">
 			{% else %}
@@ -122,15 +139,21 @@
 	</footer>
 </body>
 
-<!-- Scripts -->
+<!-- Script para cambiar de tema en la pagina de usuario -->
 <script type="text/javascript">
-	function myfunc(ul) {
-		var className = ul.getAttribute("class");
-		if(className=="nav-item") {
-			ul.className += " active";
-		} else {
-			ul.className = "nav-item";
-		}
+	function changeTheme() {
+			var className = document.getElementById("user_css").className
+			if(className=="bg-secondary") {
+				document.getElementById("user_css").className = " bg-light";
+			} else {
+				document.getElementById("user_css").className = "bg-secondary";
+			}
+			var className2 = document.getElementById("side_card").className
+			if(className2=="card bg-warning border-dark") {
+				document.getElementById("side_card").className = "card bg-light border-dark";
+			} else {
+				document.getElementById("side_card").className = "card bg-warning border-dark";
+			}
 	}
 </script>
 

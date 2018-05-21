@@ -10,7 +10,12 @@ from django.db.models import Count
 
 def load_museums_xml():
     import defusedxml.ElementTree as ET
-    xmlFile = open('201132-0-museos.xml', "r")
+    import urllib.request
+    url = 'https://datos.madrid.es/egob/catalogo/201132-0-museos.xml'
+    try:
+        xmlFile = urllib.request.urlopen(url)
+    except URLError:
+        xmlFile = open('201132-0-museos.xml', "r")
     tree = ET.parse(xmlFile)
     root = tree.getroot()
     # DESCARTA infoDataset
@@ -70,8 +75,16 @@ def load_museums_xml():
 
 def load_museums_json():
     import json
-    jsonFile = open('201132-0-museos.json', "r")
-    jdict = json.load(jsonFile)
+    import urllib.request
+    import codecs
+    url = 'https://datos.madrid.es/egob/catalogo/201132-0-museos.json'
+    try:
+        jsonFile = urllib.request.urlopen(url)
+    except URLError:
+        jsonFile = open('201132-0-museos.json', "r")
+
+    reader = codecs.getreader("utf-8")
+    jdict = json.load(reader(jsonFile))
 
     for item in jdict['@graph']:
         distr = item['address']['district']['@id'].split('/')[-1]
@@ -87,190 +100,6 @@ def load_museums_json():
         Museum(id=item['id'], name=item['title'], url=item['relation'],
                description=descr, access=acc, address=dirr,
                district=distr).save()
-
-
-def museums_lists(filter_key):
-    if filter_key and filter_key != 'ALL':
-        print('FILTER')
-        m = Museum.objects.filter(district=filter_key)
-    else:
-        m = Museum.objects.all()
-    d = Museum.objects.values_list('district', flat=True).distinct()
-    return {'Museum_list': m, 'District_list': d}
-
-
-def museums(request):
-    filter_key = ''
-    if request.method == "GET":
-        if 'filter' in request.COOKIES:
-            filter_key = request.COOKIES['filter']
-        context = museums_lists(filter_key)
-        return render(request, 'museos.html', context)
-    elif request.method == "POST":
-        response = HttpResponseRedirect('museos')
-        if request.POST.get('district'):
-            response.set_cookie('filter', request.POST.get('district'))
-        elif request.POST.get('refresh'):
-            refresh = request.POST.get('refresh')
-            if refresh == 'xml':
-                print('REFRESH XML')
-                load_museums_xml()
-            elif refresh == 'json':
-                print('REFRESH JSON')
-                load_museums_json()
-        return response
-    else:
-        return HttpResponseNotFound()
-
-
-def museum(request, ID):
-    print(ID)
-    if request.method == "GET":
-        m = Museum.objects.get(id=ID)
-        f = Comment_Form()
-        context = {'Museum': m, 'Form': f}
-        return render(request, 'museo.html', context)
-    elif request.method == "POST":
-        m = Museum.objects.get(id=ID)
-        if request.POST.get('text'):
-            f = Comment_Form(request.POST)
-            coment = f.save()
-            m.coment.add(coment)
-            m.save()
-        elif request.POST.get('add'):
-            # if request.user.username != 'root':
-            c = Collection.objects.get(user=request.user.username)
-            # idempotent
-            if not Added_Museum.objects.filter(museum=m, collection=c):
-                added_museum = Added_Museum(museum=m, collection=c).save()
-        elif request.POST.get('vote'):
-            if request.user.is_authenticated():
-                if not request.session.get('has_voted_%s' % ID, False):
-                    m = Museum.objects.get(id=ID)
-                    m.vote += 1
-                    m.save()
-                    request.session['has_voted_%s' % ID] = True
-
-        return HttpResponseRedirect(request.path)
-    else:
-        return HttpResponseNotFound()
-
-
-def load_custom_CSS(request):
-    print('load_custom_CSS')
-    if request.user.is_authenticated():
-        user = request.user.username
-        print(user)
-        try:
-            csssheet = Collection.objects.get(user=user)
-        except ObjectDoesNotExist:
-            print("Either the entry or blog doesn't exist.")
-        context = {'CSS': csssheet}
-        return render(request, 'custom.css', context, content_type="text/css")
-    else:
-        return HttpResponse('')
-
-
-def user(request, user_name):
-    from django.core.paginator import Paginator
-
-    if request.method == "GET":
-        c = get_object_or_404(Collection, user=user_name)
-        am = Added_Museum.objects.filter(collection=c)
-        page = request.GET.get('page', 1)
-
-        paginator = Paginator(am, 5)
-        try:
-            am2 = paginator.page(page)
-        except PageNotAnInteger:
-            am2 = paginator.page(1)
-        except EmptyPage:
-            am2 = paginator.page(paginator.num_pages)
-
-        f = CSS_Form(instance=c)
-        f2 = Title_Form(instance=c)
-        context = {'Collection': c, 'Added_Museums': am2,
-                   'CSS_Form': f, 'Title_Form': f2}
-        return render(request, 'usuario.html', context)
-    elif request.method == "POST":
-        c = Collection.objects.get(user=user_name)
-        if 'css_page' in request.POST:
-            f = CSS_Form(request.POST, instance=c)
-            print(f)
-            if f.is_valid():
-                f.save()
-        elif request.POST.get('title'):
-            f = Title_Form(request.POST, instance=c)
-            if f.is_valid():
-                f.save()
-        else:
-            return HttpResponseNotFound()
-        return HttpResponseRedirect(request.path)
-    else:
-        return HttpResponseNotFound()
-
-
-def user_xml(request, user_name):
-    # from django.core import serializers
-    if request.method == "GET":
-        c = Collection.objects.get(user=user_name)
-        am = Added_Museum.objects.filter(collection=c)
-        m = []
-        for entry in am:
-            print(entry.museum)
-            m.append(entry.museum)
-        # data = serializers.serialize("xml", m, exclude=('coment'))
-        context = {'Collection': c, 'Museum_list': m}
-        data = render(request, 'Collection_to_xml.xml', context)
-        response = HttpResponse(data, content_type='text/xml')
-        cd = 'attachment; filename="%s.xml"' % user_name
-        response['Content-Disposition'] = cd
-        return response
-    else:
-        return HttpResponseNotFound()
-
-
-def user_json(request, user_name):
-    if request.method == "GET":
-        c = Collection.objects.get(user=user_name)
-        am = Added_Museum.objects.filter(collection=c)
-        m = []
-        for entry in am:
-            print(entry.museum)
-            m.append(entry.museum)
-        context = {'Collection': c, 'Museum_list': m}
-        data = render(request, 'Collection_to_json.json', context)
-        response = HttpResponse(data, content_type='text/json')
-        cd = 'attachment; filename="%s.json"' % user_name
-        response['Content-Disposition'] = cd
-        return response
-    else:
-        return HttpResponseNotFound()
-
-
-def sign_up(request):
-    if request.method == "GET":
-        f = UserCreationForm()
-        return render(request, 'registration/signup.html', {'form': f})
-    elif request.method == "POST":
-        f = UserCreationForm(request.POST)
-        ban_list = ['museos', 'xml', 'json', 'set_language',
-                    'lastcomments', 'topmuseums', 'logout',
-                    'login', 'signup', 'custom.css', 'admin']
-        u = request.POST.get('username')
-        print(u)
-        if u not in ban_list:
-            if f.is_valid():
-                f.save()
-                Collection(user=f.cleaned_data['username']).save()
-                messages.success(request, 'Account created successfully')
-            return HttpResponseRedirect('signup')
-        else:
-            w = 'Username already exist and/or passwords don\'t match up'
-            messages.warning(request, w)
-            return HttpResponseRedirect('signup')
-    else:
-        return HttpResponseNotFound()
 
 
 def main_xml(request):
@@ -303,6 +132,202 @@ def main_json(request):
         return HttpResponseNotFound()
 
 
+def user_xml(request, user_name):
+    if request.method == "GET":
+        c = Collection.objects.get(user=user_name)
+        am = Added_Museum.objects.filter(collection=c)
+        m = []
+        for entry in am:
+            m.append(entry.museum)
+        context = {'Collection': c, 'Museum_list': m}
+        data = render(request, 'Collection_to_xml.xml', context)
+        response = HttpResponse(data, content_type='text/xml')
+        cd = 'attachment; filename="%s.xml"' % user_name
+        response['Content-Disposition'] = cd
+        return response
+    else:
+        return HttpResponseNotFound()
+
+
+def user_json(request, user_name):
+    if request.method == "GET":
+        c = Collection.objects.get(user=user_name)
+        am = Added_Museum.objects.filter(collection=c)
+        m = []
+        for entry in am:
+            m.append(entry.museum)
+        context = {'Collection': c, 'Museum_list': m}
+        data = render(request, 'Collection_to_json.json', context)
+        response = HttpResponse(data, content_type='text/json')
+        cd = 'attachment; filename="%s.json"' % user_name
+        response['Content-Disposition'] = cd
+        return response
+    else:
+        return HttpResponseNotFound()
+
+
+def access_only(request):
+    if request.method == "POST":
+        response = HttpResponseRedirect(request.POST.get('next'))
+        if request.POST.get('access_only'):
+            response.set_cookie('access_only', request.POST.get('access_only'))
+        return response
+    else:
+        return HttpResponseNotFound()
+
+
+def museums_lists(filter_key, access_only):
+    if filter_key and filter_key != 'ALL':
+        if access_only == 'True':
+            m = Museum.objects.filter(district=filter_key).filter(access=True)
+        else:
+            m = Museum.objects.filter(district=filter_key)
+    else:
+        if access_only == 'True':
+            m = Museum.objects.filter(access=True)
+        else:
+            m = Museum.objects.all()
+    d = Museum.objects.values_list('district', flat=True).distinct()
+    return {'Museum_list': m, 'District_list': d}
+
+
+def museums(request):
+    filter_key = ''
+    access_only = ''
+    if request.method == "GET":
+        if 'filter' in request.COOKIES:
+            filter_key = request.COOKIES['filter']
+        if 'access_only' in request.COOKIES:
+            access_only = request.COOKIES['access_only']
+            print(access_only)
+        context = museums_lists(filter_key, access_only)
+        return render(request, 'museos.html', context)
+    elif request.method == "POST":
+        response = HttpResponseRedirect('museos')
+        if request.POST.get('district'):
+            response.set_cookie('filter', request.POST.get('district'))
+        elif request.POST.get('refresh'):
+            refresh = request.POST.get('refresh')
+            if refresh == 'xml':
+                load_museums_xml()
+            elif refresh == 'json':
+                load_museums_json()
+        return response
+    else:
+        return HttpResponseNotFound()
+
+
+def museum(request, ID):
+    if request.method == "GET":
+        m = Museum.objects.get(id=ID)
+        f = Comment_Form()
+        context = {'Museum': m, 'Form': f}
+        return render(request, 'museo.html', context)
+    elif request.method == "POST":
+        m = Museum.objects.get(id=ID)
+        if request.POST.get('text'):
+            f = Comment_Form(request.POST)
+            coment = f.save()
+            m.coment.add(coment)
+            m.save()
+        elif request.POST.get('add'):
+            # if request.user.username != 'root':
+            c = Collection.objects.get(user=request.user.username)
+            # idempotent
+            if not Added_Museum.objects.filter(museum=m, collection=c):
+                added_museum = Added_Museum(museum=m, collection=c).save()
+        elif request.POST.get('vote'):
+            if request.user.is_authenticated():
+                if not request.session.get('has_voted_%s' % ID, False):
+                    m = Museum.objects.get(id=ID)
+                    m.vote += 1
+                    m.save()
+                    request.session['has_voted_%s' % ID] = True
+
+        return HttpResponseRedirect(request.path)
+    else:
+        return HttpResponseNotFound()
+
+
+def load_custom_CSS(request):
+    if request.user.is_authenticated():
+        user = request.user.username
+        try:
+            csssheet = Collection.objects.get(user=user)
+        except ObjectDoesNotExist:
+            print("Entry doesn't exist.")
+        context = {'CSS': csssheet}
+        return render(request, 'custom.css', context, content_type="text/css")
+    else:
+        return HttpResponse('')
+
+
+def user(request, user_name):
+    from django.core.paginator import Paginator
+
+    if request.method == "GET":
+        c = get_object_or_404(Collection, user=user_name)
+        if request.COOKIES.get('access_only') == 'True':
+            m = Museum.objects.exclude(access=False)
+            am = Added_Museum.objects.filter(collection=c).filter(museum=m)
+        else:
+            am = Added_Museum.objects.filter(collection=c)
+        page = request.GET.get('page', 1)
+
+        paginator = Paginator(am, 5)
+        try:
+            am2 = paginator.page(page)
+        except PageNotAnInteger:
+            am2 = paginator.page(1)
+        except EmptyPage:
+            am2 = paginator.page(paginator.num_pages)
+
+        f = CSS_Form(instance=c)
+        f2 = Title_Form(instance=c)
+        context = {'Collection': c, 'Added_Museums': am2,
+                   'CSS_Form': f, 'Title_Form': f2}
+        return render(request, 'usuario.html', context)
+    elif request.method == "POST":
+        c = Collection.objects.get(user=user_name)
+        if 'css_page' in request.POST:
+            f = CSS_Form(request.POST, instance=c)
+            if f.is_valid():
+                f.save()
+        elif request.POST.get('title'):
+            f = Title_Form(request.POST, instance=c)
+            if f.is_valid():
+                f.save()
+        else:
+            return HttpResponseNotFound()
+        return HttpResponseRedirect(request.path)
+    else:
+        return HttpResponseNotFound()
+
+
+def sign_up(request):
+    if request.method == "GET":
+        f = UserCreationForm()
+        return render(request, 'registration/signup.html', {'form': f})
+    elif request.method == "POST":
+        f = UserCreationForm(request.POST)
+        ban_list = ['museos', 'xml', 'json', 'set_language', 'accessonly',
+                    'lastcomments', 'topmuseums', 'logout',
+                    'login', 'signup', 'custom.css', 'admin']
+        u = request.POST.get('username')
+        if u not in ban_list:
+            if f.is_valid():
+                f.save()
+                Collection(user=f.cleaned_data['username']).save()
+                messages.success(request, 'Account created successfully')
+            return HttpResponseRedirect('signup')
+        else:
+            w = 'Username already exist and/or passwords don\'t match up'
+            messages.warning(request, w)
+            return HttpResponseRedirect('signup')
+    else:
+        return HttpResponseNotFound()
+
+
 def set_language(request):
     from django.utils import translation
     if request.method == "POST":
@@ -315,12 +340,24 @@ def set_language(request):
         return HttpResponseNotFound()
 
 
+def about(request):
+    if request.method == "GET":
+        return render(request, 'about.html')
+    else:
+        return HttpResponseNotFound()
+
+
 def main_page(request):
     if request.method == "GET":
         # museos
-        m = Museum.objects.exclude(coment__isnull=True)\
-            .annotate(num_coment=Count('coment'))\
-            .order_by('-num_coment')[:5]
+        if request.COOKIES.get('access_only') == 'True':
+            m = Museum.objects.exclude(coment__isnull=True)\
+                .exclude(access=False).annotate(num_coment=Count('coment'))\
+                .order_by('-num_coment')[:5]
+        else:
+            m = Museum.objects.exclude(coment__isnull=True)\
+                .annotate(num_coment=Count('coment'))\
+                .order_by('-num_coment')[:5]
         # Usuarios
         u = Collection.objects.all()
         context = {'Museum_list': m, 'User_list': u}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-21 05:41+0200\n"
+"POT-Creation-Date: 2018-05-21 11:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,23 +17,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: museum_app/feeds.py:8
+#: museum_app/feeds.py:9
 msgid "Most commented museums"
 msgstr "Museos más comentados"
 
-#: museum_app/feeds.py:10
+#: museum_app/feeds.py:11
 msgid "List top five museums by number of comments."
 msgstr "Lista de los cinco museos con más comentarios."
 
-#: museum_app/feeds.py:27
+#: museum_app/feeds.py:29
 msgid "Last comments"
 msgstr "Últimos comentarios"
 
-#: museum_app/feeds.py:29
+#: museum_app/feeds.py:31
 msgid "List five last comments."
 msgstr "Lista de los últimos cinco comentarios."
 
-#: museum_app/forms.py:11
+#: museum_app/forms.py:12
 msgid "comment"
 msgstr "comentario"
 
@@ -45,31 +45,37 @@ msgstr "Ingles"
 msgid "Spanish"
 msgstr "Español"
 
-#: templates/base.html:44
+#: templates/base.html:42
 msgid "Hi"
 msgstr "Hola"
 
-#: templates/base.html:52
+#: templates/base.html:50
 msgid "Username"
 msgstr "Nombre de usuario"
 
-#: templates/base.html:55
+#: templates/base.html:53
 msgid "Password"
 msgstr "Contraseña"
 
-#: templates/base.html:72 templates/main.html:5
+#: templates/base.html:70 templates/main.html:5
+#: templates/registration/reg_base.html:47
 msgid "Home"
 msgstr "Inicio"
 
-#: templates/base.html:80
+#: templates/base.html:78 templates/registration/reg_base.html:55
 msgid "All"
 msgstr "Todos"
 
-#: templates/base.html:87
+#: templates/base.html:86 templates/base.html.py:94
+
+msgid "Museums only"
+msgstr "Sólo museos"
+
+#: templates/base.html:104 templates/registration/reg_base.html:62
 msgid "About"
 msgstr "About"
 
-#: templates/base.html:112
+#: templates/base.html:129 templates/registration/reg_base.html:87
 msgid "This application uses data from the open data portal of Madrid."
 msgstr ""
 "Esta aplicación utiliza datos del portal de datos abiertos de la ciudad de "
@@ -131,14 +137,18 @@ msgstr "CSS personalizado"
 msgid "Upload"
 msgstr "Establecer"
 
-#: templates/usuario.html:77
+#: templates/usuario.html:73
+msgid "Change theme"
+msgstr "Cambiar tema"
+
+#: templates/usuario.html:78
 msgid "Change Title"
 msgstr "Cambiar título"
 
-#: templates/usuario.html:80
+#: templates/usuario.html:81
 msgid "Change"
 msgstr "Cambiar"
 
-#: templates/usuario.html:87
+#: templates/usuario.html:89
 msgid "Channel for selected museums"
 msgstr "Canal para los museos seleccionados"

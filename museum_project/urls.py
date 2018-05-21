@@ -16,6 +16,8 @@ urlpatterns = [
     url(r'^lastcomments$', last_comment_feed()),
     url(r'^set_language$', vs.set_language),
     url(r'^museos$', vs.museums),
+    url(r'^about$', vs.about),
+    url(r'^accessonly$', vs.access_only),
     url(r'^museos/(?P<ID>\d+)$', vs.museum, name = 'museum'),
     url(r'^xml$', vs.main_xml),
     url(r'^json$', vs.main_json),

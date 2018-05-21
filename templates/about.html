@@ -1,0 +1,67 @@
+<!-- templates/about.html -->
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}About{% endblock %}
+{% block content %}
+<main role="main" id="main" class="main_css container">
+	<div class="row">
+		<h1>X-Serv-Practica-Museos</h1>
+	</div>
+	<div class="row">
+		<h3>Nazar Shandra. Grado en ingeniería en tecnologías de la telecomunicación.</h3>
+		<p>Nombre de su cuenta en el laboratorio del alumno: nshandra</p>
+		<p>Nombre de usuario en GitHub: nshandra</p>
+		<p>Resumen de las peculiaridades que se quieran mencionar sobre lo implementado en la parte obligatoria.</p>
+		<ul>
+			<li>La mayor parte de los estilos CSS se han realizado con Bootstrap</li>
+			<li>El banner sirve de enlace a la pagina principal</li>
+			<li>Cualquier usuario podrá indicar que quiere una vista del sitio que incluya sólo los museos mediante un botón en la barra de opciones.</li>
+		</ul>
+		<p>Lista de funcionalidades opcionales que se hayan implementado, y breve descripción de cada una.</p>
+		<ul>
+			<li>Inclusión de un favicon del sitio.</li>
+			<li>Generación  de  un  canal  XML  para  los  contenidos  que  se  muestran  en la página principal, así como para los contenidos de cada usuario. </li>
+			<li>Generación de canales, pero con los contenidos en JSON.</li>
+			<li>Generación de un canal RSS para los comentarios puestos en el sitio, así como para los museos mas comentados.</li>
+			<li>Funcionalidad de registro de usuarios, con lista de nombres restringidos.</li>
+			<li>Uso de Javascript  para cambiar el aspecto de la pagina de usuario entre un tema oscuro y uno claro.</li>
+			<li>Puntuación de museos. Cada visitante (registrado o no) puede dar un “+1” a cualquier museo del sitio. La suma de “+” que ha obtenido un museo se verá cada vez que se vea la pagina del museo en el sitio.</li>
+			<li>Uso de elementos HTML5: 
+				<ul>
+					<li>!DOCTYPE html</li>
+					<li>button: form, formaction</li>
+					<li>nav</li>
+					<li>footer</li>
+				</ul>
+			</li>
+				<li>Atención al idioma indicado por el navegador. Localización en español e ingles mediante 'django.utils.translation'. botón en la barra para cambiar de idioma. El banner cambia según el idioma activo.</li>
+		</ul>
+		<p>URL del vídeo demostración de la funcionalidad básica: <a href="">VIDEO</a></p>
+		<p>URL del vídeo demostración de la funcionalidad optativa, si se ha realizado funcionalidad optativa: <a href="">VIDEO</a></p>
+	</div>
+	<h4>Fuentes: </h4>
+	<div class="row">
+		<ul>
+			<li>
+				<a href="https://docs.djangoproject.com/en/1.8/">Documentacion de Django</a>
+			</li>
+			<li>
+				<a href="https://getbootstrap.com/docs/">Documentacion de Bootstrap</a>
+			</li>
+			<li>
+				<a href="https://stackoverflow.com">Stack Overflow</a>
+			</li>
+			<li>
+				<a href="https://pypi.org/project/defusedxml/0.5.0/">defusedxml: </a>XML bomb protection for Python stdlib modules
+			</li>
+			<li>
+				<a href="http://www.feedicons.com/">Iconos RSS</a>
+			</li>
+			<li>
+				<a href="http://www.fontmeme.com/">Text generator:</a> Banner, favicon, logo ES y EN.
+			</li>
+		</ul>
+	</div>
+</main>
+{% endblock %}
